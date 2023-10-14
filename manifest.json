@@ -30,7 +30,7 @@
         "type": "module"
     },
     "content_scripts": [{
-        "js": ["natural-search.js", "/transcription/content-script.js"],
+        "js": ["natural-search.js", "/transcription/recorder.js"],
         "matches": ["https://www.verizon.com/*"]
     }],
     "web_accessible_resources": [

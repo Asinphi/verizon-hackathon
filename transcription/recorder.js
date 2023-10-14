@@ -10,7 +10,7 @@ recorder.onresult = function(event) {
     for (var i = event.resultIndex; i < event.results.length; ++i) {
         transcript += event.results[i][0].transcript;
     }
-    console.log(transcript);
+    port.postMessage(transcript);
 };
 
 // setup connection to worker
