@@ -66,7 +66,7 @@ async function getAnswerFromGPT3(question){
         console.log("Question saved");
     });
 
-    var url = 'https://api.openai.com/v1/completions'; // Replace it with the correct URL
+    var url = 'https://api.openai.com/v1/chat/completions';
     var options = {
         method: 'POST',
         headers: {
@@ -74,16 +74,24 @@ async function getAnswerFromGPT3(question){
             'Authorization': 'Bearer ' + document.apiKey,
         },
         body: JSON.stringify({
-            'prompt': question,
-            'max_tokens': 60,
-            'model': 'text-davinci-003'
+            'model': 'gpt-3.5-turbo',
+            'messages': [
+                {
+                    'role': 'system',
+                    'content': 'You are a chrome extension assistant helping the user with information'
+                },
+                {
+                    'role': 'user',
+                    'content': question
+                }
+            ]
         })
     };
     
     try {
         var response = await fetch(url, options);
         var data = await response.json();
-        var answer = data.choices[0].text;
+        var answer = data.choices[0].message.content;
     
         // Store the answer
         chrome.storage.sync.set({"answer": answer}, function() {
