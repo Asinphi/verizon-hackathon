@@ -1,0 +1,13 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F2F2F2;
+    padding: 15px;
+  }
+  #chatbox {
+    border: 1px solid #999;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  button {
+    margin-top: 10px;
+  }
