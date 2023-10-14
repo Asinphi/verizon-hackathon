@@ -2,9 +2,18 @@ document.addEventListener('DOMContentLoaded', function () {
     
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
+            console.log("REQUEST is in...");
             if (request.text) {
-                console.log("Entire website text:", request.text);
-                // Do something with the text
+                console.log('Received text:', request.text);
+                // Add additional functionality here:
+                for (let i = 0; i < request.text.length; i++) {
+                    let item = request.text[i];
+                    if (item.text == question) {
+                        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                            chrome.tabs.sendMessage(tabs[0].id, {highlightId: item.parentElementId});
+                        });
+                    }
+                }
             }
         }
     );
