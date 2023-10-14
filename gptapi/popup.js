@@ -76,7 +76,7 @@ async function readTextWithElevenLabs(msg) {
     const url = "https://api.elevenlabs.io/v1/text-to-speech/ThT5KcBeYPX3keUQqHPh";
 
     // Randomly select API key
-    let selectedKey = document.elevenKey;
+    let selectedKey = elevenKey;
 
     const headers = {
         "Accept": "audio/mpeg",
