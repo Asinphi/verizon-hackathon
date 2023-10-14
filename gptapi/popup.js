@@ -124,6 +124,47 @@ async function getAnswerFromGPT3(question){
         throw error;
     }
 }
+
+async function getUserIntentGPT3(prompt){
+    var url = 'https://api.openai.com/v1/chat/completions';
+    var options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + document.apiKey,
+        },
+        body: JSON.stringify({
+            'model': 'gpt-3.5-turbo',
+            'messages': [
+                {
+                    'role': 'system',
+                    'content': 'Return the user intent as a one-word answer from these: ["navigate", "information"]\n\n-----\n\nINPUT: I want to buy a plan\nOUTPUT: navigate\n\nINPUT: what are the plans available?\nOUTPUT: information'
+                },
+                {
+                    'role': 'user',
+                    'content': prompt
+                }
+            ],
+            'temperature': 0.0,
+            'max_tokens': 10,
+        })
+    };
+    
+    try {
+        var response = await fetch(url, options);
+        var data = await response.json();
+        var intent = data.choices[0].message.content;
+        console.log("The user intent is: " + intent)
+        return intent;
+    } 
+    catch(error){
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+
   
   window.onload = function() {
 
