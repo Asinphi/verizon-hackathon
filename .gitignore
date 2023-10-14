@@ -3,6 +3,8 @@ __pycache__/
 .vcscode/
 dist/
 
+gptapi/apiKey.js
+
 # Logs
 logs
 *.log

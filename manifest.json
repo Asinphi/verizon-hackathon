@@ -14,9 +14,13 @@
     "options_page": "settings/settings.html",
     "action": {
         "default_title": "Clickless Verizon",
-        "default_icon": "logo/verizon-logo-32.png"
+        "default_icon": "logo/verizon-logo-32.png",
+        "default_popup": "gptapi/popup.html"
     },
-    "permissions": [],
+    "permissions": [
+        "storage",
+        "activeTab"
+    ],
     "host_permissions": [
         "*://*/*"
     ],
@@ -26,5 +30,12 @@
     "content_scripts": [{
         "js": ["natural-search.js"],
         "matches": ["https://www.verizon.com/*"]
-    }]
+    }],
+    "web_accessible_resources": [
+        {
+            "resources": ["natural-search.html"],
+            "matches": ["https://www.verizon.com/*"],
+            "use_dynamic_url": true
+        }
+    ]
 }
