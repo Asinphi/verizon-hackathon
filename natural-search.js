@@ -77,10 +77,10 @@ async function botSpeech(msg) {
     await readTextWithElevenLabs(msg);
 }
 
-setTimeout(() => {
-    container.style.opacity = "1";
-    container.style.bottom = "10%";
-}, 500);
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+    if (!request.botMsg) return;
+    await botSpeech(request.botMsg);
+});
 
 let starterPromptSent = false;
 inputEl.addEventListener("focus", async () => {
@@ -89,6 +89,11 @@ inputEl.addEventListener("focus", async () => {
         starterPromptSent = true;
     }
 });
+
+setTimeout(() => {
+    container.style.opacity = "1";
+    container.style.bottom = "10%";
+}, 500);
 
 setTimeout(async () => { // animate placeholder text in input bar
     const prefix = "I am looking ";
