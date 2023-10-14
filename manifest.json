@@ -19,7 +19,8 @@
     },
     "permissions": [
         "storage",
-        "activeTab"
+        "activeTab",
+        "scripting"
     ],
     "host_permissions": [
         "*://*/*"
@@ -29,7 +30,7 @@
         "type": "module"
     },
     "content_scripts": [{
-        "js": ["natural-search.js"],
+        "js": ["natural-search.js", "/transcription/content-script.js"],
         "matches": ["https://www.verizon.com/*"]
     }],
     "web_accessible_resources": [

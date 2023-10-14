@@ -1,6 +1,4 @@
 
-export {runTranscriptionWorker};
-
 function runTranscriptionWorker() {
     var recognition = new webkitSpeechRecognition()
     recognition.continuous = true;
@@ -20,3 +18,5 @@ function runTranscriptionWorker() {
 
     recognition.start();
 }
+
+runTranscriptionWorker()
