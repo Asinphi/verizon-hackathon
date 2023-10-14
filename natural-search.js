@@ -27,7 +27,6 @@ setTimeout(() => {
     container.style.bottom = "10%";
 }, 500);
 
-
 setTimeout(async () => { // animate placeholder text in input bar
     const prefix = "I am looking ";
 
@@ -36,7 +35,8 @@ setTimeout(async () => { // animate placeholder text in input bar
         "for prepaid plans.",
         "for my lost phone.",
         "for Verizon's roadside assistance.",
-        "to chat with customer service."
+        "to chat with customer service.",
+        "for benefits of switching to Verizon."
     ]
 
     let idx = 0;
@@ -51,3 +51,27 @@ setTimeout(async () => { // animate placeholder text in input bar
     }
 
 }, 3000);
+
+inputEl.addEventListener("keydown", async (e) => {
+    if (e.key !== "Enter" || e.shiftKey) return;
+    await chrome.runtime.sendMessage({
+        query: inputEl.value,
+    });
+});
+
+{ // Microphone recording
+    const recorder = new webkitSpeechRecognition();
+    recorder.continuous = true;
+    recorder.interimResults = false;
+    recorder.onresult = (e) => {
+       for (let i = e.resultIndex; i < e.results.length; i++)
+           inputEl.value += e.results[i][0].transcript;
+    };
+
+    container.querySelector(".natural-search__microphone-checkbox").addEventListener("change", (e) => {
+        if (e.currentTarget.checked)
+            recorder.start();
+        else
+            recorder.stop();
+    });
+}
