@@ -122,10 +122,12 @@ setTimeout(async () => { // animate placeholder text in input bar
 
 inputEl.addEventListener("keydown", async (e) => {
     if (e.key !== "Enter" || e.shiftKey) return;
-    inputEl.value = "";
+    e.preventDefault();
     await chrome.runtime.sendMessage({
         query: inputEl.value,
     });
+    console.log("Sent query", inputEl.value);
+    inputEl.value = "";
 });
 
 { // Microphone recording
@@ -143,10 +145,12 @@ inputEl.addEventListener("keydown", async (e) => {
             }
             inputEl.value = finalTranscript + interimTranscript;
         }
-        recorder.onend = (e) => {
-            finalTranscript = "";
-        }
+        inputEl.focus();
     };
+
+    recorder.onend = (e) => {
+        finalTranscript = "";
+    }
 
     container.querySelector(".natural-search__microphone-checkbox").addEventListener("change", (e) => {
         if (e.currentTarget.checked)
