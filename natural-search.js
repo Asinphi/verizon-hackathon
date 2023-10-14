@@ -6,6 +6,8 @@
 
 console.log("This prints to the console of the page (injected only if the page url matched)");
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 const container = document.createElement("div");
 container.classList.toggle("natural-search", true);
 document.body.appendChild(container);
@@ -24,3 +26,28 @@ setTimeout(() => {
     container.style.opacity = "1";
     container.style.bottom = "10%";
 }, 500);
+
+
+setTimeout(async () => { // animate placeholder text in input bar
+    const prefix = "I am looking ";
+
+    const placeholders = [
+        "to replace my old phone.",
+        "for prepaid plans.",
+        "for my lost phone.",
+        "for Verizon's roadside assistance.",
+        "to chat with customer service."
+    ]
+
+    let idx = 0;
+    while (true) {
+        inputEl.placeholder = prefix;
+        for (const char of placeholders[idx]) {
+            await sleep(80);
+            inputEl.placeholder += char;
+        }
+        idx = (idx + 1) % placeholders.length;
+        await sleep(2000);
+    }
+
+}, 3000);
