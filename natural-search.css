@@ -24,7 +24,22 @@ glow {
     transition: opacity 1s ease, bottom 1s ease;
 }
 
+.natural-search__bot-msg {
+    z-index: 90;
+    position: absolute;
+    bottom: 50%;
+    left: 2%;
+    display: block;
+    background-color: #709cda;
+    border-radius: 14px;
+    padding: 3px 10px;
+    color: whitesmoke;
+    opacity: 0;
+    transition: opacity 0.4s ease, bottom 0.5s ease 0.2s;
+}
+
 .natural-search__input {
+    z-index: 100;
     width: 100%;
     flex-shrink: 1;
     display: block;
