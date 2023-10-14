@@ -62,10 +62,21 @@ inputEl.addEventListener("keydown", async (e) => {
 { // Microphone recording
     const recorder = new webkitSpeechRecognition();
     recorder.continuous = true;
-    recorder.interimResults = false;
+    recorder.interimResults = true;
+    let finalTranscript = "";
     recorder.onresult = (e) => {
-       for (let i = e.resultIndex; i < e.results.length; i++)
-           inputEl.value += e.results[i][0].transcript;
+        let interimTranscript = "";
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+            if (e.results[i].isfinal) {
+                finalTranscript += e.results[i][0].transcript;
+            } else {
+                interimTranscript += e.results[i][0].transcript;
+            }
+            inputEl.value = finalTranscript + interimTranscript;
+        }
+    recorder.onend = (e) => {
+        finalTranscript = "";
+    }
     };
 
     container.querySelector(".natural-search__microphone-checkbox").addEventListener("change", (e) => {
