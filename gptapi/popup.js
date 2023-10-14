@@ -31,7 +31,6 @@ async function getAnswerFromGPT3(question){
     });
 
     var url = 'https://api.openai.com/v1/completions'; // Replace it with the correct URL
-    var apiKey = document.apiKey; // Replace it with the correct API key
     var options = {
         method: 'POST',
         headers: {
@@ -41,7 +40,7 @@ async function getAnswerFromGPT3(question){
         body: JSON.stringify({
             'prompt': question,
             'max_tokens': 60,
-            'model': 'gpt-3.5-turbo'
+            'model': 'text-davinci-003'
         })
     };
     
