@@ -16,9 +16,6 @@ importScripts("gptapi/chatgpt.js");
 // The path should be relative to the file `manifest.json`.
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-    /* TODO Send to ChatGPT and execute corresponding website section code, which sends to URL, maybe also establishes
-        a connnection with the active tab for more follow-up questions and such
-     */
     if (!request.query) return;
 
     try {
@@ -26,7 +23,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         let intent = await getUserIntentGPT3(request.query);
         console.log('User Intent:', intent);
         // if the intent is to information, then we need to parse the page and return the parentElementId
-        if (intent == "information") {
+        if (intent === "information") {
             // get the parsedtree from storage
             chrome.storage.local.get('parsedTree', async function(data) {
                 var savedParsedTree = data.parsedTree ? data.parsedTree : 'No parsed tree saved';
