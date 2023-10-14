@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('User Question:', question);
 
         try {
-            let answer = "<answer goes here>"
+            let answer = await getAnswerFromGPT3(question);
             console.log('Bot Answer:', answer);
     
             // Display the question and answer in the chatbox
@@ -23,6 +23,45 @@ document.addEventListener('DOMContentLoaded', function () {
  
     }, false);
 });
+
+async function getAnswerFromGPT3(question){
+    // Store the question 
+    chrome.storage.sync.set({"question": question}, function() {
+        console.log("Question saved");
+    });
+
+    var url = 'https://api.openai.com/v1/completions'; // Replace it with the correct URL
+    var apiKey = '<REDACTED>'; 
+    var options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + apiKey,
+        },
+        body: JSON.stringify({
+            'prompt': question,
+            'max_tokens': 60,
+            'model': 'gpt-3.5-turbo'
+        })
+    };
+    
+    try {
+        var response = await fetch(url, options);
+        var data = await response.json();
+        var answer = data.choices[0].text;
+    
+        // Store the answer
+        chrome.storage.sync.set({"answer": answer}, function() {
+          console.log("Answer saved");
+        });
+             
+        return answer;
+    } 
+    catch(error){
+        console.error('Error:', error);
+        throw error;
+    }
+}
   
   window.onload = function() {
 
