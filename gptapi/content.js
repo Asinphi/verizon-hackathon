@@ -1,3 +1,5 @@
+// Add ids to all elements on the page
+// necessary to be able to find the element later
 function addUniqueID() {
     let all = document.getElementsByTagName("*");
     for (let i=0, max=all.length; i < max; i++) {
@@ -7,14 +9,13 @@ function addUniqueID() {
     }
 }
 
+// Parses all h1,h2,and p elements on the page and returns an array of objects
 function getTextFromPage() {
     let allElements = Array.prototype.slice.call(document.body.getElementsByTagName('*'));
     let allText = [];
   
     allElements.map((el) => {
         switch (el.tagName.toLowerCase()) {
-            case 'h1':
-            case 'h2':
             case 'p':
                 let text = el.textContent.trim();        
                 if (text) {
@@ -36,19 +37,26 @@ function getTextFromPage() {
 
 addUniqueID();
 
-// Send a message containing the page text to the extension
-console.log(getTextFromPage());
-chrome.runtime.sendMessage({text: getTextFromPage()});
-
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
+        console.log("REQUEST is in...")
         if (request.highlightId) {
             let element = document.getElementById(request.highlightId);
             if (element) {
-                element.style.border = "thick solid red";
+                // Styling files get priority over inline styles
+                var style = document.createElement('style');
+                style.innerHTML = `
+                #${request.highlightId} {
+                    border: thick solid red !important;
+                }`;
+                document.head.appendChild(style);
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 element.focus();
             }
+        }
+        if (request.text == "send_tree") {
+            var savedParsedTree = getTextFromPage();
+            chrome.runtime.sendMessage({text: savedParsedTree});
         }
     }
 );
