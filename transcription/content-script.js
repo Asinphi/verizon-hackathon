@@ -11,7 +11,7 @@ function runTranscriptionWorker() {
     recognition.onresult = function(event) {
         transcript = '';
         for (var i = event.resultIndex; i < event.results.length; ++i) {
-            final_transcript += event.results[i][0].transcript;
+            transcript += event.results[i][0].transcript;
         }
         console.log(transcript);
     };
