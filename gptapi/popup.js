@@ -1,4 +1,14 @@
 document.addEventListener('DOMContentLoaded', function () {
+    
+    chrome.runtime.onMessage.addListener(
+        function(request, sender, sendResponse) {
+            if (request.text) {
+                console.log("Entire website text:", request.text);
+                // Do something with the text
+            }
+        }
+    );
+
     readTextWithElevenLabs("Hello, I am your personal assistant. How can I help you?");
     document.getElementById('sendButton').addEventListener('click', async function() {
         var inputField = document.getElementById('userInput');
