@@ -40,7 +40,7 @@ async function getAnswerFromGPT3(question){
         body: JSON.stringify({
             'prompt': question,
             'max_tokens': 60,
-            'model': 'gpt-3.5-turbo'
+            'model': 'text-davinci-003'
         })
     };
     
