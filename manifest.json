@@ -1,0 +1,43 @@
+{
+    // Comments are accepted in the manifest, even though it is JSON.
+    "manifest_version": 3,
+    "name": "Clickless Verizon",
+    "description": "Navigate the Verizon website using only the power of your voice and natural language.",
+    "version": "0.0.1",
+    "icons": {
+        "32": "logo/verizon-logo-32.png",
+        "48": "logo/verizon-logo-48.png",
+        "128": "logo/verizon-logo-128.png",
+        "256": "logo/verizon-logo-256.webp",
+        "360": "logo/verizon-logo-360.png"
+    },
+    "options_page": "settings/settings.html",
+    "action": {
+        "default_title": "Clickless Verizon",
+        "default_icon": "logo/verizon-logo-32.png",
+        "default_popup": "gptapi/popup.html"
+    },
+    "permissions": [
+        "storage",
+        "activeTab",
+        "scripting"
+    ],
+    "host_permissions": [
+        "*://*/*"
+    ],
+    "background": {
+        "service_worker": "service-worker.js",
+        "type": "module"
+    },
+    "content_scripts": [{
+        "js": ["natural-search.js", "/transcription/recorder.js"],
+        "matches": ["https://www.verizon.com/*"]
+    }],
+    "web_accessible_resources": [
+        {
+            "resources": ["natural-search.html"],
+            "matches": ["https://www.verizon.com/*"],
+            "use_dynamic_url": true
+        }
+    ]
+}

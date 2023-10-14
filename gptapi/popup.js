@@ -31,12 +31,11 @@ async function getAnswerFromGPT3(question){
     });
 
     var url = 'https://api.openai.com/v1/completions'; // Replace it with the correct URL
-    var apiKey = '<REDACTED>'; 
     var options = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + apiKey,
+            'Authorization': 'Bearer ' + document.apiKey,
         },
         body: JSON.stringify({
             'prompt': question,
