@@ -36,7 +36,7 @@ async function getAnswerFromGPT3(question){
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + apiKey,
+            'Authorization': 'Bearer ' + document.apiKey,
         },
         body: JSON.stringify({
             'prompt': question,
