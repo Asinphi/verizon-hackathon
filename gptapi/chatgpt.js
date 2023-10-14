@@ -120,6 +120,44 @@ async function parsedPageDictionary(parsedTree, prompt){
     }
 }
 
+async function summarizeAnswer(info, prompt){
+    var url = 'https://api.openai.com/v1/chat/completions';
+    var options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + apiKey,
+        },
+        body: JSON.stringify({
+            'model': 'gpt-3.5-turbo-16k',
+            'messages': [
+                {
+                    'role': 'system',
+                    'content': `Give a short answer based on the prompt and relevant info. Here is the relevant information: ${info}`
+                },
+                {
+                    'role': 'user',
+                    'content': prompt
+                }
+            ],
+            'temperature': 0.5,
+            'max_tokens': 100,
+        })
+    };
+
+    try {
+        var response = await fetch(url, options);
+        var data = await response.json();
+        var answer = data.choices[0].message.content;
+        console.log("The answer is: " + answer)
+        return answer;
+    }
+    catch(error){
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
 async function readTextWithElevenLabs(msg) {
     const url = "https://api.elevenlabs.io/v1/text-to-speech/ThT5KcBeYPX3keUQqHPh";
 

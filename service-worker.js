@@ -4,7 +4,6 @@
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-console.log("This prints to the console of the service worker (background script)")
 
 // Importing and using functionality from external files is also possible.
 //importScripts('service-worker-utils.js')
@@ -31,7 +30,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                 let elementId = await parsedPageDictionary(savedParsedTree, request.query);
                 console.log('Element ID:', elementId);
                 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id, {highlightId: elementId}, function(response) {
+                    chrome.tabs.sendMessage(tabs[0].id, {highlightId: elementId, prompt: request.query}, function(response) {
                         console.log("Sent message to scroll & highlight element");
                         return true;
                     });

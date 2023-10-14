@@ -38,7 +38,7 @@ function getTextFromPage() {
 addUniqueID();
 
 chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
+    async function(request, sender, sendResponse) {
         console.log("REQUEST is in...")
         if (request.highlightId) {
             let element = document.getElementById(request.highlightId);
@@ -52,6 +52,7 @@ chrome.runtime.onMessage.addListener(
                 document.head.appendChild(style);
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 element.focus();
+                await botSpeech(await summarizeAnswer(element.querySelector("p").innerHTML, request.prompt));
             }
         }
         if (request.text == "send_tree") {
