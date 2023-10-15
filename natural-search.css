@@ -19,7 +19,8 @@ glow {
     width: 80%;
     bottom: -10%;
     left: 10%;
-    z-index: 2000;
+    z-index: 1000000; /* Actually the lowest z-index I can use to make it appear above everything */
+    font-family: BrandFont-Text, Arial, sans-serif;
     opacity: 0;
     transition: opacity 1s ease, bottom 1s ease;
 }

@@ -11,7 +11,8 @@ const container = document.createElement("div");
 container.classList.toggle("natural-search", true);
 document.body.appendChild(container);
 
-container.innerHTML = `<canvas class="natural-search__mascot" id="mascotCanvas"></canvas><span class="natural-search__bot-msg"></span>
+container.innerHTML = `<span class="natural-search__bot-msg"></span>
+<canvas class="natural-search__mascot" id="mascotCanvas"></canvas>
 <label for="natural-search__input" class="natural-search__input-label"></label>
 <textarea class="natural-search__input" id="natural-search__input" placeholder="What are you looking for?"></textarea>
 <input type="checkbox" style="display: none" id="natural-search__microphone-checkbox" class="natural-search__microphone-checkbox">
@@ -59,6 +60,7 @@ inputEl.addEventListener("focus", async () => {
 setTimeout(() => {
     container.style.opacity = "1";
     container.style.bottom = "10%";
+    inputEl.focus();
 }, 500);
 
 setTimeout(async () => { // animate placeholder text in input bar
@@ -99,6 +101,16 @@ inputEl.addEventListener("keydown", async (e) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.destinationURL)
         window.location.href = request.destinationURL;
+});
+
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+    if (!request.execute) return;
+    console.log("Executing function", request.execute, "with", request.args);
+    const callback = websiteSections[request.section].foreground[request.execute]
+    if (request.args)
+        callback(...request.args);
+    else
+        callback();
 });
 
 { // Microphone recording

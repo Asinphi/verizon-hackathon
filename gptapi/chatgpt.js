@@ -1,3 +1,7 @@
+const promptedFunctions = {}; // Functions that can be called if the AI prompts the user for a specific response
+const promptedArguments = {}
+let lastBotPrompt = "";
+
 async function getAnswerFromGPT3(question){
     // Store the question
     chrome.storage.sync.set({"question": question}, function() {
@@ -44,36 +48,144 @@ async function getAnswerFromGPT3(question){
     }
 }
 
-async function getUserIntentGPT3(prompt){
+async function getUserIntentAndInfo(prompt){
     var url = 'https://api.openai.com/v1/chat/completions';
+    const argumentsList = Object.values(promptedArguments).map((data) => data.obj)
+    const onlyIntents = argumentsList.length === 0;
+
+    const body = {
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+            {
+                'role': 'system',
+                'content': 'Set the user intent as one of these: ["navigate", "information"]\n\n-----\n\nINPUT: I want to buy a plan\nOUTPUT: navigate\n\nINPUT: What are the plans available?\nOUTPUT: information'
+            },
+            {
+                'role': 'user',
+                'content': prompt
+            }
+        ],
+        'max_tokens': onlyIntents ? 10 : 50,
+        'temperature': 0.1,
+        function_call: {
+            name: "set_intent_and_info"
+        },
+        functions: [
+            {
+                "name": "set_intent_and_info",
+                "description": "Set the user intent as either 'navigate' or 'information' and any other relevant information from the prompt.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "intent": {
+                            "type": "string",
+                            "enum": ["navigate", "information"],
+                            "description": "Whether to 'navigate' and perform an action or give the user 'information'."
+                        }
+                    },
+                    "required": ["intent"]
+                }
+            }
+        ]
+    }
+    if (lastBotPrompt)
+        body.messages.splice(1, 0, {
+            role: "assistant",
+            content: lastBotPrompt
+        });
+    if (argumentsList.length > 0)
+        for (const [name, arg] of Object.entries(promptedArguments))
+            body.functions[0].parameters.properties[name] = arg.obj;
     var options = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + apiKey,
         },
-        body: JSON.stringify({
-            'model': 'gpt-3.5-turbo',
-            'messages': [
-                {
-                    'role': 'system',
-                    'content': 'Return the user intent as a one-word answer from these: ["navigate", "information"]\n\n-----\n\nINPUT: I want to buy a plan\nOUTPUT: navigate\n\nINPUT: what are the plans available?\nOUTPUT: information'
-                },
-                {
-                    'role': 'user',
-                    'content': prompt
-                }
-            ],
-            'temperature': 0.0,
-            'max_tokens': 10,
-        })
+        body: JSON.stringify(body)
     };
 
     try {
         var response = await fetch(url, options);
         var data = await response.json();
-        var intent = data.choices[0].message.content;
+        console.log("Intent obj:", data, "and there were", argumentsList.length, "arguments:", promptedArguments);
+        const message = data.choices[0].message;
+        const args = JSON.parse(message.function_call.arguments);
+        let hasExtraArg = false;
+        if (argumentsList.length > 0)
+            for (const [name, param] of Object.entries(promptedArguments)) {
+                if (args[name]) {
+                    console.log("Arg", name, "is", args[name]);
+                    param.callback(args[name]);
+                    delete promptedArguments[name];
+                    hasExtraArg = true;
+                }
+            }
+        if (hasExtraArg)
+            return;
+
+        var intent = args.intent;
         console.log("The user intent is: " + intent)
+        return intent;
+    }
+    catch(error){
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+async function getUserIntentGPT3(prompt, onlyIntents = false){
+    var url = 'https://api.openai.com/v1/chat/completions';
+    const functionsList = Object.values(promptedFunctions).map((data) => data.obj)
+    if (functionsList.length === 0)
+        onlyIntents = true;
+    const body = {
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+            {
+                'role': 'user',
+                'content': prompt
+            }
+        ],
+        'max_tokens': onlyIntents ? 10 : 50,
+    }
+    if (onlyIntents) {
+        body.messages.unshift({
+            'role': 'system',
+            'content': 'Return the user intent as a one-word answer from these: ["navigate", "information"]\n\n-----\n\nINPUT: I want to buy a plan\nOUTPUT: navigate\n\nINPUT: What are the plans available?\nOUTPUT: information'
+        });
+        body.temperature = 0.0;
+    } else
+        body.messages.unshift({
+            role: "system",
+            content: "You are a website assistant that will call the function relevant to the user's request, if one exists."
+        });
+    var options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + apiKey,
+        },
+        body: JSON.stringify(body)
+    };
+    if (functionsList.length > 0)
+        options["functions"] = functionsList;
+
+    try {
+        var response = await fetch(url, options);
+        var data = await response.json();
+        console.log("Intent obj:", data, "and there were", functionsList.length, "functions:", functionsList);
+        const message = data.choices[0].message;
+        if (message.function_call) {
+            console.log("Calling function", message.function_call.name, "with", message.function_call.arguments);
+            promptedFunctions[message.function_call.name].callback(message.function_call.arguments);
+            delete promptedFunctions[message.function_call.name];
+            return;
+        }
+        var intent = message.content;
+        console.log("The user intent is: " + intent)
+        if (!onlyIntents && intent !== "navigation" && intent !== "information")
+            return await getUserIntentGPT3(prompt, true);
         return intent;
     }
     catch(error){
@@ -157,41 +269,6 @@ async function summarizeAnswer(info, prompt){
     }
 }
 
-async function readTextWithElevenLabs(msg) {
-    const url = "https://api.elevenlabs.io/v1/text-to-speech/ThT5KcBeYPX3keUQqHPh";
-
-    // Randomly select API key
-    let selectedKey = elevenKey;
-
-    const headers = {
-        "Accept": "audio/mpeg",
-        "Content-Type": "application/json",
-        "xi-api-key": selectedKey
-    };
-
-    const data = {
-        "text": msg,
-        "model_id": "eleven_monolingual_v1",
-        "voice_settings": {
-            "stability": 0.66,
-            "similarity_boost": 0.72,
-        }
-    };
-
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(data)
-        });
-        const blob = await response.blob();
-        const audio = new Audio(URL.createObjectURL(blob));
-        audio.play();
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
 async function pageMapper(prompt) {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -239,4 +316,39 @@ async function pageMapper(prompt) {
     //     "arguments": "{\n  \"page\": \"prepaid_plans\"\n}"
     //     }
     return JSON.parse(data.choices[0].message.function_call.arguments).page;
+}
+
+async function readTextWithElevenLabs(msg) {
+    const url = "https://api.elevenlabs.io/v1/text-to-speech/ThT5KcBeYPX3keUQqHPh";
+
+    // Randomly select API key
+    let selectedKey = elevenKey;
+
+    const headers = {
+        "Accept": "audio/mpeg",
+        "Content-Type": "application/json",
+        "xi-api-key": selectedKey
+    };
+
+    const data = {
+        "text": msg,
+        "model_id": "eleven_monolingual_v1",
+        "voice_settings": {
+            "stability": 0.66,
+            "similarity_boost": 0.72,
+        }
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(data)
+        });
+        const blob = await response.blob();
+        const audio = new Audio(URL.createObjectURL(blob));
+        audio.play();
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }

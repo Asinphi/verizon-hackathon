@@ -28,7 +28,7 @@
         "service_worker": "service-worker.js"
     },
     "content_scripts": [{
-        "js": ["gptapi/apiKey.js", "gptapi/chatgpt.js", "natural-search.js", "gptapi/content.js"],
+        "js": ["gptapi/apiKey.js", "gptapi/chatgpt.js", "website-sections.js","natural-search.js", "gptapi/content.js"],
         "css": ["natural-search.css"],
         "matches": ["https://www.verizon.com/*"]
     }],

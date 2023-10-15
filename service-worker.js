@@ -16,6 +16,8 @@ importScripts("website-sections.js");
 // extension, simply do `importScripts('path/to/file.js')`.
 // The path should be relative to the file `manifest.json`.
 
+
+
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         console.log("REQUEST is in...");
@@ -37,7 +39,11 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
     try {
         // get the user intent with their question:
-        let intent = await getUserIntentGPT3(request.query);
+        let intent = await getUserIntentAndInfo(request.query);
+        if (!intent) { // Responded to a prompt
+            console.log("No intent");
+            return;
+        }
         console.log('User Intent:', intent);
         // if the intent is to information, then we need to parse the page and return the parentElementId
         if (intent === "information") {
