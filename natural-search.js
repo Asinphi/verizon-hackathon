@@ -56,6 +56,9 @@ inputEl.addEventListener("focus", async () => {
     if (window.location.href === "https://www.verizon.com/" && !starterPromptSent) {
         await botSpeech("I am A.I.Ra. How can I help you today?");
         starterPromptSent = true;
+        mascot.startWaving(mascot.handL);
+        await sleep(2000);
+        mascot.stopWaving(mascot.handL);
     }
 });
 
@@ -89,7 +92,10 @@ setTimeout(async () => { // animate placeholder text in input bar
 
 }, 3000);
 
+let lastKeyDown = new Date().getTime();
+
 inputEl.addEventListener("keydown", async (e) => {
+    lastKeyDown = new Date().getTime();
     if (e.key !== "Enter" || e.shiftKey) return;
     e.preventDefault();
     await chrome.runtime.sendMessage({
@@ -98,6 +104,17 @@ inputEl.addEventListener("keydown", async (e) => {
     console.log("Sent query", inputEl.value);
     inputEl.value = "";
 });
+
+setTimeout(async () => { // Periodically have mascot wave
+    while (true) {
+        await sleep(Math.random() * 1000 * 10 + 5000); // Wait 5-15 secs
+        if (new Date().getTime() - lastKeyDown > 5000) {
+            mascot.startWaving(mascot.handL);
+            await sleep(2000);
+            mascot.stopWaving(mascot.handL);
+        }
+    }
+}, 5000);
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.destinationURL)
@@ -338,6 +355,8 @@ function loadImage(fp) {
     });
 }
 
+let mascot;
+
 (async () => {
     const canvas = document.getElementById("mascotCanvas");
 
@@ -354,10 +373,10 @@ function loadImage(fp) {
     const handL = await loadImage(chrome.runtime.getURL("/assets/hand.png"));
     const handR = await loadImage(chrome.runtime.getURL("/assets/hand.png"));
 
-    const mascot = new Mascot(canvas, head, torso, handR, handL);
-    mascot.startTalking()
+    mascot = new Mascot(canvas, head, torso, handR, handL);
+    //mascot.startTalking()
     mascot.startBouncing()
-    mascot.startWaving(mascot.handR);
-    mascot.startWaving(mascot.handL);
+    //mascot.startWaving(mascot.handR);
+    //mascot.startWaving(mascot.handL);
     mascot.draw();
 })();

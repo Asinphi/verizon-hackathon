@@ -347,6 +347,12 @@ async function readTextWithElevenLabs(msg) {
         });
         const blob = await response.blob();
         const audio = new Audio(URL.createObjectURL(blob));
+        audio.addEventListener("canplay", () => {
+            mascot.startTalking();
+        });
+        audio.addEventListener("ended", () => {
+            mascot.stopTalking();
+        });
         audio.play();
     } catch (error) {
         console.error('Error:', error);
