@@ -270,43 +270,49 @@ async function summarizeAnswer(info, prompt){
 }
 
 async function pageMapper(prompt) {
+    const body = {
+        "model": "gpt-3.5-turbo-0613",
+        "messages": [
+            {
+                "role": "system",
+                "content": "You determine which page to send the user to based on their prompt and the following page descriptions:\n\n" + pageDescriptions
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        "function_call": { name: "page_navigator" },
+        "functions": [
+            {
+                "name": "page_navigator",
+                "description": "Sends the user to the webpage they are looking for.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "page": {
+                            "type": "string",
+                            "enum": ['Smartphones', 'Apple iPhone 14', 'Accessories', 'Cart', 'Billing Information', 'Prepaid Plans'],
+                            "description": "The name of the page to redirect to."
+                        }
+                    },
+                    "required": ["page"]
+                }
+            }
+        ]
+    }
+    if (lastBotPrompt)
+        body.messages.splice(1, 0, {
+            role: "assistant",
+            content: lastBotPrompt
+        });
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${apiKey}`
         },
-        body: JSON.stringify({
-            "model": "gpt-3.5-turbo-0613",
-            "messages": [
-                {
-                    "role": "system",
-                    "content": "You determine which page to send the user to based on their prompt and the following page descriptions:\n\n" + pageDescriptions
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            "function_call": { name: "page_navigator" },
-            "functions": [
-                {
-                    "name": "page_navigator",
-                    "description": "Sends the user to the webpage they are looking for.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "page": {
-                                "type": "string",
-                                "enum": ['Smartphones', 'Apple iPhone 14', 'Accessories', 'Cart', 'Billing Information', 'Prepaid Plans'],
-                                "description": "The name of the page to redirect to."
-                            }
-                        },
-                        "required": ["page"]
-                    }
-                }
-            ]
-        })
+        body: JSON.stringify(body)
     });
     const data = await response.json();
     console.log(data);
