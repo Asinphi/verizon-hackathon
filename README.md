@@ -48,5 +48,5 @@ We became proficient in using collaboration software such as Miro and Notion, an
 AIRA could be expanded to work with websites within the Verizon network and potentially extend its services to other businesses.
 <br><br>**Enhancing Knowledge Base**:<br>
 We aim to give AIRA a broader knowledge base, enabling it to provide even more comprehensive information about company products and services.
-**Enhancing Knowledge Base - **
+<br><br>**Enhancing Knowledge Base **<br>
 We aim to give AIRA a broader knowledge base, enabling it to provide even more comprehensive information about company products and services.
