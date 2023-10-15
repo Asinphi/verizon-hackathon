@@ -12,27 +12,61 @@ function addUniqueID() {
 // Parses all h1,h2,and p elements on the page and returns an array of objects
 function getTextFromPage() {
     let allElements = Array.prototype.slice.call(document.body.getElementsByTagName('*'));
-    let allText = [];
+    let allText = {};
   
     allElements.map((el) => {
         switch (el.tagName.toLowerCase()) {
+            case 'span':
+            case 'h4':
             case 'p':
-                let text = el.textContent.trim();        
+                let text = el.textContent.trim().replace(/\s+/g, " ");
                 if (text) {
                     let parent = el.parentElement;
                     let id = parent.id;
-                    allText.push({
-                        text: text,
-                        parentElementId: id
-                    });
+                    allText[text] = id;
                 }
                 break;
             default:
                 break;
         }
     });
+    const results = [];
+    for (const [text, parentElementId] of Object.entries(allText))
+        results.push({
+            text: text,
+            parentElementId: parentElementId
+        });
 
-    return allText;
+    return results;
+}
+
+function getTextDataFromDiv(el) {
+    const divText = [];
+        const divTextDict = {};
+        for (const textEl of el.querySelectorAll("p, span, h4")) {
+            const text = el.textContent.trim().replace(/\s+/g, " ");
+            if (text && !divTextDict[text]) {
+                divText.push(text);
+                divTextDict[text] = true;
+            }
+        }
+    return divText;
+}
+
+function getGroupedTextFromPage(el = document.body, allDivs = []) {
+    if (el.clientHeight < window.innerHeight * 0.8 && el.clientWidth < window.innerWidth * 0.3) {
+        const divText = getTextDataFromDiv(el);
+        if (divText.length > 0)
+            allDivs.push({
+                text: divText,
+                parentElementId: el.id
+            });
+    } else {
+        const subDivs = document.querySelectorAll(`#${el.id} > div, #${el.id} > main, #${el.id} > section`);
+        subDivs.forEach((div) => getGroupedTextFromPage(div, allDivs));
+    }
+
+    return allDivs;
 }
 
 addUniqueID();
@@ -52,7 +86,7 @@ chrome.runtime.onMessage.addListener(
                 document.head.appendChild(style);
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 element.focus();
-                await botSpeech(await summarizeAnswer(element.querySelector("p").innerHTML, request.prompt));
+                await botSpeech(await summarizeAnswer(getTextDataFromDiv(element), request.prompt));
             }
         }
         if (request.text == "send_tree") {
@@ -61,3 +95,8 @@ chrome.runtime.onMessage.addListener(
         }
     }
 );
+
+// Send tree to service worker
+chrome.runtime.sendMessage({
+    text: getGroupedTextFromPage()
+});
