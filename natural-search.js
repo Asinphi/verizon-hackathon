@@ -219,6 +219,8 @@ class BodyPart {
 
     stopBouncing() {
         this.isBouncing = false;
+        this.yOffset = 0;
+        this.sinBounceAngle = 0;
     }
 
     update() {
@@ -226,9 +228,7 @@ class BodyPart {
             this.yOffset = -Math.sin(this.sinBounceAngle) * this.sinBounceHeight;
             this.setY(this.origin().y + this.yOffset);
             this.sinBounceAngle += this.sinBounceDelta;
-            if (this.sinBounceAngle >= Math.PI) {
-                this.sinBounceAngle = 0;
-            }
+            this.sinBounceAngle %= Math.PI;
         }
 
         requestAnimationFrame(() => this.update());
@@ -266,7 +266,6 @@ class Mascot {
             return {x: canvas.width/2 - this.torso.width/2, y: canvas.height - this.torso.height}
         }
 
-        this.wavingHand = this.handR;
 
         [this.torso, this.head, this.handL, this.handR].forEach((part) => {
             part.update();
@@ -292,12 +291,11 @@ class Mascot {
         this.torso.stopBouncing();
     }
 
-    startWaving() {
-        this.wavingHand.startBouncing(.10*this.height, Math.PI/40)
+    startWaving(hand) {
+        hand.startBouncing(.10*this.height, Math.PI/40)
     }
-    stopWaving() {
-        this.wavingHand.stopBouncing();
-        this.wavingHand = this.thisWavingHand === this.handL? this.handR : this.handL;
+    stopWaving(hand) {
+        hand.stopBouncing();
     }
 
     draw() {
@@ -337,11 +335,8 @@ function loadImage(fp) {
 
     const mascot = new Mascot(canvas, head, torso, handR, handL);
     mascot.startTalking()
-    mascot.startWaving()
     mascot.startBouncing()
-    setTimeout(() => {
-        mascot.stopWaving();
-        setTimeout(()=>mascot.startWaving(), 1000)
-    }, 2000)
+    mascot.startWaving(mascot.handR);
+    mascot.startWaving(mascot.handL);
     mascot.draw();
 })();
