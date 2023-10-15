@@ -30,6 +30,17 @@ chrome.runtime.onMessage.addListener(
             chrome.storage.local.set({"parsedTree": jsonString}, function() {
                 console.log("Parsed tree saved");
             });
+
+
+            // Execute corresponding website section guide if on page
+            chrome.tabs.query({active: true, lastFocusedWindow: true}, async function(tabs) {
+                for (const [name, section] of Object.entries(websiteSections))
+                    if (typeof section === "object" && section.url === tabs[0].url) {
+                        await sleep(3000);
+                        section.background();
+                        return;
+                    }
+            });
         }
     }
 );
@@ -53,7 +64,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                 console.log("Saved Parsed Tree: " + savedParsedTree);
                 let elementId = await parsedPageDictionary(savedParsedTree, request.query);
                 console.log('Element ID:', elementId);
-                chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
                     chrome.tabs.sendMessage(tabs[0].id, {highlightId: elementId, prompt: request.query}, function(response) {
                         console.log("Sent message to scroll & highlight element");
                         return true;

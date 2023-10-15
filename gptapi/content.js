@@ -101,12 +101,13 @@ chrome.runtime.onMessage.addListener(
         }
         if (request.text == "send_tree") {
             var savedParsedTree = getGroupedTextFromPage();
-            chrome.runtime.sendMessage({text: savedParsedTree});
+            chrome.runtime.sendMessage({text: savedParsedTree, url: window.location.href});
         }
     }
 );
 
 // Send tree to service worker
 chrome.runtime.sendMessage({
-    text: getGroupedTextFromPage()
+    text: getGroupedTextFromPage(),
+    url: window.location.href
 });

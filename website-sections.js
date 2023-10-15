@@ -1,5 +1,5 @@
 function sendMessage(msgObj) {
-    return chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    return chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
         chrome.tabs.sendMessage(tabs[0].id, msgObj);
     });
 }
@@ -59,14 +59,23 @@ function addPromptedArg(obj, callback) {
 }
 
 const websiteSections = {
-    "Accessories": "https://www.verizon.com/sales/prepaid/accessoryInterstitial.html",
     "Cart": "https://www.verizon.com/sales/prepaid/expresscart.html?promohub=true",
-    "Billing Information": "https://www.verizon.com/sales/prepaid/aboutyourself.html",
     "Smartphones": "https://www.verizon.com/smartphones/prepaid/",
-    "Apple iPhone 14": {
+    "Billing Information": {
+        url: "https://www.verizon.com/sales/prepaid/aboutyourself.html",
         background: async () => {
-            await goToUrl("https://www.verizon.com/smartphones/apple-iphone-14-prepaid/");
-            await sleep(3000);
+            await sendBotMsg("Tell us about yourself and join the Verizon family.");
+        }
+    },
+    "Accessories": {
+        url: "https://www.verizon.com/sales/prepaid/accessoryInterstitial.html",
+        background: async () => {
+            await sendBotMsg("Care for additional accessories?");
+        }
+    },
+    "Apple iPhone 14": {
+        url: "https://www.verizon.com/smartphones/apple-iphone-14-prepaid/",
+        background: async () => {
             await sendBotMsg("Do you have a preferred phone color? Storage capacity?");
 
             let colorSet = false;
@@ -118,10 +127,9 @@ const websiteSections = {
         }
     },
     "Prepaid Plans": {
+        url: "https://www.verizon.com/plans/prepaid/",
         background: async () => {
-            await goToUrl("https://www.verizon.com/plans/prepaid/");
-            await sleep(3000);
-            await sendBotMsg("Okay, what plan would you like? 15GB data, Unlimited Data, or Unlimited Plus?")
+            await sendBotMsg("What plan would you like? 15 GB data, Unlimited Data, or Unlimited Plus?")
 
             addPromptedArg({
                 "num_phone_lines": {
@@ -131,7 +139,7 @@ const websiteSections = {
             }, async (numLines) => {
                 await execute("Prepaid Plans", "setNumLines", [numLines]);
                 await sleep(2000);
-                await sendBotMsg("Would you like to check out the smartphones you can get along with your plan?");
+                await sendBotMsg("If you don't have a smartphone, you can buy one from Verizon to use with your plan. Would you like to check out our smartphones?");
             });
         },
         foreground: {
@@ -158,5 +166,7 @@ const navigateToSection = async (sectionName) => {
     const callback = websiteSections[sectionName];
     if (typeof callback === "string")
         return goToUrl(callback);
-    return await callback.background();
+    if (callback.url) {
+        await goToUrl(callback.url);
+    }
 }
