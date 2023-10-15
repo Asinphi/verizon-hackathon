@@ -50,3 +50,11 @@ AIRA could be expanded to work with websites within the Verizon network and pote
 We aim to give AIRA a broader knowledge base, enabling it to provide even more comprehensive information about company products and services.
 <br><br>**Enhancing Knowledge Base **<br>
 We aim to give AIRA a broader knowledge base, enabling it to provide even more comprehensive information about company products and services.
+
+## Deploying the code
+Our secret API keys are in a file not in this repository. To deploy it with your own API keys, add the file `gptapi/apiKey.js`:
+```js
+const apiKey = "Your OpenAI API key here";
+const elevenKey = "Your Eleven Labs API key here";
+```
+For loading the extension into your Chromium-based (Chrome, Edge, Opera, etc.) browser, [see this tutorial](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked).
