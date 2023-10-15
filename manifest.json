@@ -34,7 +34,7 @@
     }],
     "web_accessible_resources": [
         {
-            "resources": ["assets/microphone-80.png"],
+            "resources": ["assets/microphone-80.png", "assets/head.png", "assets/torso.png", "assets/hand.png"],
             "matches": ["https://www.verizon.com/*"]
         }
     ]
