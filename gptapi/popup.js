@@ -15,9 +15,9 @@ chrome.runtime.onMessage.addListener(
 );
 
 document.addEventListener('DOMContentLoaded', async function () {
-
+    const res = await page_mapper("I want to buy a plan");
+    console.log(res);
     await readTextWithElevenLabs("Hello, I am your personal assistant. How can I help you?");
-
     // send a message to the content script to send the parsedTree over
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {text: "send_tree"}, function(response) {
