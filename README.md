@@ -1,4 +1,8 @@
+<p align="center">
+  <img src="https://github.com/Rebeljah/verizon-hackathon/blob/main/assets/head.png" />
+</p>
 
+## AIRA
 ## Inspiration
 We were inspired to create a click less interaction with a retail website. Our inspiration was to mirror the experience of walking into a retail location and talking to an associate in person.
 
