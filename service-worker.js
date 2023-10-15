@@ -8,11 +8,29 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 // Importing and using functionality from external files is also possible.
 //importScripts('service-worker-utils.js')
 importScripts("gptapi/apiKey.js");
+importScripts("pageDescriptions.js");
 importScripts("gptapi/chatgpt.js");
+importScripts("website-sections.js");
 
 // If you want to import a file that is deeper in the file hierarchy of your
 // extension, simply do `importScripts('path/to/file.js')`.
 // The path should be relative to the file `manifest.json`.
+
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        console.log("REQUEST is in...");
+        if (request.text) {
+            console.log('Received text:', request.text);
+            // turn the given array into a json string
+            var jsonString = JSON.stringify(request.text);
+            console.log(jsonString);
+            // Add additional functionality here:
+            chrome.storage.local.set({"parsedTree": jsonString}, function() {
+                console.log("Parsed tree saved");
+            });
+        }
+    }
+);
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     if (!request.query) return;
@@ -39,12 +57,13 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             return;
         }
         else{
-            let answer = await getAnswerFromGPT3(request.query);
-            console.log('Bot Answer:', answer);
-
+            let page = await pageMapper(request.query);
+            console.log("Sending to page", page);
+            await navigateToSection(page);
         }
     }
     catch (error) {
         console.error('Error:', error);
     }
+    return true;
 })

@@ -133,15 +133,14 @@ async function summarizeAnswer(info, prompt){
             'messages': [
                 {
                     'role': 'system',
-                    'content': `Give a short answer based on the prompt and relevant info. Here is the relevant information: ${info}`
+                    'content': `Give a short answer based on the question and relevant info. Here is the relevant information: ${info}`
                 },
                 {
                     'role': 'user',
                     'content': prompt
                 }
             ],
-            'temperature': 0.5,
-            'max_tokens': 100,
+            'max_tokens': 60,
         })
     };
 
@@ -191,4 +190,53 @@ async function readTextWithElevenLabs(msg) {
     } catch (error) {
         console.error('Error:', error);
     }
+}
+
+async function pageMapper(prompt) {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+            "model": "gpt-3.5-turbo-0613",
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You determine which page to send the user to based on their prompt and the following page descriptions:\n\n" + pageDescriptions
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "function_call": { name: "page_navigator" },
+            "functions": [
+                {
+                    "name": "page_navigator",
+                    "description": "Sends the user to the webpage they are looking for.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "page": {
+                                "type": "string",
+                                "enum": ['Smartphones', 'Apple iPhone 14', 'Accessories', 'Cart', 'Billing Information', 'Prepaid Plans'],
+                                "description": "The name of the page to redirect to."
+                            }
+                        },
+                        "required": ["page"]
+                    }
+                }
+            ]
+        })
+    });
+    const data = await response.json();
+    console.log(data);
+    // this will return the following for example:
+    //    {
+    //     "name": "page_mapper",
+    //     "arguments": "{\n  \"page\": \"prepaid_plans\"\n}"
+    //     }
+    return JSON.parse(data.choices[0].message.function_call.arguments).page;
 }

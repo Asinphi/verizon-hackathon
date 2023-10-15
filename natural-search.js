@@ -38,6 +38,7 @@ async function botSpeech(msg) {
     botMsg.innerHTML = msg;
     botMsg.style.bottom = "150%";
     botMsg.style.opacity = "1";
+    console.log("Sent bot msg", msg);
 
     await readTextWithElevenLabs(msg);
 }
@@ -93,6 +94,11 @@ inputEl.addEventListener("keydown", async (e) => {
     });
     console.log("Sent query", inputEl.value);
     inputEl.value = "";
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.destinationURL)
+        window.location.href = request.destinationURL;
 });
 
 { // Microphone recording
