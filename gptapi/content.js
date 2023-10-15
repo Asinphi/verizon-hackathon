@@ -62,7 +62,7 @@ function getGroupedTextFromPage(el = document.body, allDivs = []) {
                 parentElementId: el.id
             });
     } else {
-        const subDivs = document.querySelectorAll(`#${el.id} > div, #${el.id} > main, #${el.id} > section`);
+        const subDivs = document.querySelectorAll(`#${el.id} > :is(div, main, section)`);
         subDivs.forEach((div) => getGroupedTextFromPage(div, allDivs));
     }
 
@@ -71,13 +71,28 @@ function getGroupedTextFromPage(el = document.body, allDivs = []) {
 
 addUniqueID();
 
+function getSmallGroupedTextFromPage() {
+    const allDivs = []
+    document.querySelectorAll(`:is(div, main, section):has(> :is(p, span, h4))`).forEach((container) => {
+        const divText = getTextDataFromDiv(container);
+        if (divText.length > 0)
+            allDivs.push({
+                text: divText,
+                parentElementId: container.id
+            });
+    });
+
+    return allDivs;
+}
+
 chrome.runtime.onMessage.addListener(
     async function(request, sender, sendResponse) {
         console.log("REQUEST is in...")
         if (request.highlightId) {
             let element = document.getElementById(request.highlightId);
             if (element) {
-                const highlightedEl = element.querySelector(`:is(main, section, div):has(> :is(p, span, h4))`) ?? element;
+                const highlightedEl = document.querySelector(`#${element.id}:has(> :is(p, span, h4, a))`) ? element :
+                    element.querySelector(`:is(main, section, div):has(> :is(p, span, h4, a))`) ?? element;
                 highlightedEl.style.border = "thick solid #3932dc";
                 highlightedEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 highlightedEl.focus();
@@ -85,7 +100,7 @@ chrome.runtime.onMessage.addListener(
             }
         }
         if (request.text == "send_tree") {
-            var savedParsedTree = getTextFromPage();
+            var savedParsedTree = getGroupedTextFromPage();
             chrome.runtime.sendMessage({text: savedParsedTree});
         }
     }
