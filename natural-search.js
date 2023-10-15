@@ -12,7 +12,9 @@ container.classList.toggle("natural-search", true);
 document.body.appendChild(container);
 
 container.innerHTML = `<span class="natural-search__bot-msg"></span>
-<canvas class="natural-search__mascot" id="mascotCanvas"></canvas>
+<div class="natural-search__mascot-container">
+    <canvas class="natural-search__mascot" id="mascotCanvas"></canvas>
+</div>
 <label for="natural-search__input" class="natural-search__input-label"></label>
 <textarea class="natural-search__input" id="natural-search__input" placeholder="What are you looking for?"></textarea>
 <input type="checkbox" style="display: none" id="natural-search__microphone-checkbox" class="natural-search__microphone-checkbox">
@@ -60,7 +62,6 @@ inputEl.addEventListener("focus", async () => {
 setTimeout(() => {
     container.style.opacity = "1";
     container.style.bottom = "10%";
-    inputEl.focus();
 }, 500);
 
 setTimeout(async () => { // animate placeholder text in input bar
@@ -340,7 +341,15 @@ function loadImage(fp) {
 }
 
 (async () => {
-    const canvas = document.getElementById("mascotCanvas")
+    const canvas = document.getElementById("mascotCanvas");
+
+    function resizeCanvas() {
+        canvas.height = canvas.parentElement.clientHeight;
+        canvas.width = canvas.parentElement.clientWidth;
+    }
+    resizeCanvas();
+    new ResizeObserver(resizeCanvas).observe(document.querySelector(".natural-search__mascot-container"));
+
 
     const head = await loadImage(chrome.runtime.getURL("/assets/head.png"));
     const torso = await loadImage(chrome.runtime.getURL("/assets/torso.png"));
