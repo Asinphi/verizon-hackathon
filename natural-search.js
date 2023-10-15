@@ -80,7 +80,7 @@ setTimeout(async () => { // animate placeholder text in input bar
     ]
 
     let idx = 0;
-    while (true) {
+    while (lastKeyDown === 0) {
         inputEl.placeholder = prefix;
         for (const char of placeholders[idx]) {
             await sleep(80);
@@ -89,10 +89,11 @@ setTimeout(async () => { // animate placeholder text in input bar
         idx = (idx + 1) % placeholders.length;
         await sleep(2000);
     }
+    inputEl.placeholder = "Talk to A.I.Ra.";
 
 }, 3000);
 
-let lastKeyDown = new Date().getTime();
+let lastKeyDown = 0;
 
 inputEl.addEventListener("keydown", async (e) => {
     lastKeyDown = new Date().getTime();
@@ -156,6 +157,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     const checkboxEl = container.querySelector(".natural-search__microphone-checkbox");
 
     function onTranscriptionToggle() {
+        lastKeyDown = new Date().getTime();
         if (checkboxEl.checked)
             recorder.start();
         else
