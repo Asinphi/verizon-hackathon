@@ -22,41 +22,6 @@ container.innerHTML = `<canvas class="natural-search__mascot" id="mascotCanvas">
 
 const inputEl = container.querySelector(".natural-search__input");
 
-async function readTextWithElevenLabs(msg) {
-    const url = "https://api.elevenlabs.io/v1/text-to-speech/ThT5KcBeYPX3keUQqHPh";
-
-    // Randomly select API key
-    let selectedKey = elevenKey;
-
-    const headers = {
-        "Accept": "audio/mpeg",
-        "Content-Type": "application/json",
-        "xi-api-key": selectedKey
-    };
-
-    const data = {
-        "text": msg,
-        "model_id": "eleven_monolingual_v1",
-        "voice_settings": {
-            "stability": 0.66,
-            "similarity_boost": 0.72,
-        }
-    };
-
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(data)
-        });
-        const blob = await response.blob();
-        const audio = new Audio(URL.createObjectURL(blob));
-        audio.play();
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
 let botMsg = container.querySelector(".natural-search__bot-msg");
 const botMsgTemplate = botMsg.cloneNode();
 async function botSpeech(msg) {
@@ -73,22 +38,28 @@ async function botSpeech(msg) {
     botMsg.innerHTML = msg;
     botMsg.style.bottom = "150%";
     botMsg.style.opacity = "1";
+    console.log("Sent bot msg", msg);
 
     await readTextWithElevenLabs(msg);
 }
+
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+    if (!request.botMsg) return;
+    await botSpeech(request.botMsg);
+});
+
+let starterPromptSent = false;
+inputEl.addEventListener("focus", async () => {
+    if (window.location.href === "https://www.verizon.com/" && !starterPromptSent) {
+        await botSpeech("I am A.I.Ra. How can I help you today?");
+        starterPromptSent = true;
+    }
+});
 
 setTimeout(() => {
     container.style.opacity = "1";
     container.style.bottom = "10%";
 }, 500);
-
-let starterPromptSent = false;
-inputEl.addEventListener("focus", async () => {
-    if (window.location.href === "https://www.verizon.com/" && !starterPromptSent) {
-        await botSpeech("Hello, Justin, would you like information about any products or services that we offer, or can I help you order one?");
-        starterPromptSent = true;
-    }
-});
 
 setTimeout(async () => { // animate placeholder text in input bar
     const prefix = "I am looking ";
@@ -117,10 +88,17 @@ setTimeout(async () => { // animate placeholder text in input bar
 
 inputEl.addEventListener("keydown", async (e) => {
     if (e.key !== "Enter" || e.shiftKey) return;
-    inputEl.value = "";
+    e.preventDefault();
     await chrome.runtime.sendMessage({
         query: inputEl.value,
     });
+    console.log("Sent query", inputEl.value);
+    inputEl.value = "";
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.destinationURL)
+        window.location.href = request.destinationURL;
 });
 
 { // Microphone recording
@@ -138,16 +116,32 @@ inputEl.addEventListener("keydown", async (e) => {
             }
             inputEl.value = finalTranscript + interimTranscript;
         }
-        recorder.onend = (e) => {
-            finalTranscript = "";
-        }
+        inputEl.focus();
     };
 
-    container.querySelector(".natural-search__microphone-checkbox").addEventListener("change", (e) => {
-        if (e.currentTarget.checked)
+    recorder.onend = (e) => {
+        finalTranscript = "";
+    }
+
+    const checkboxEl = container.querySelector(".natural-search__microphone-checkbox");
+
+    function onTranscriptionToggle() {
+        if (checkboxEl.checked)
             recorder.start();
         else
             recorder.stop();
+    }
+
+    checkboxEl.addEventListener("change", onTranscriptionToggle);
+
+    if (checkboxEl.checked)
+        recorder.start();
+
+    window.addEventListener("keyup", (e) => {
+        if (e.key === "m" && e.altKey) {
+            checkboxEl.checked = !checkboxEl.checked;
+            onTranscriptionToggle();
+        }
     });
 }
 
