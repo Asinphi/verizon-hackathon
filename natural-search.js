@@ -123,10 +123,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         finalTranscript = "";
     }
 
-    container.querySelector(".natural-search__microphone-checkbox").addEventListener("change", (e) => {
-        if (e.currentTarget.checked)
+    const checkboxEl = container.querySelector(".natural-search__microphone-checkbox");
+
+    function onTranscriptionToggle() {
+        if (checkboxEl.checked)
             recorder.start();
         else
             recorder.stop();
+    }
+
+    checkboxEl.addEventListener("change", onTranscriptionToggle);
+
+    if (checkboxEl.checked)
+        recorder.start();
+
+    window.addEventListener("keyup", (e) => {
+        if (e.key === "m" && e.altKey) {
+            checkboxEl.checked = !checkboxEl.checked;
+            onTranscriptionToggle();
+        }
     });
 }
