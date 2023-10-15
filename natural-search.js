@@ -51,7 +51,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 let starterPromptSent = false;
 inputEl.addEventListener("focus", async () => {
     if (window.location.href === "https://www.verizon.com/" && !starterPromptSent) {
-        await botSpeech("Hello, Justin, would you like information about any products or services that we offer, or can I help you order one?");
+        await botSpeech("I am A.I.Ra. How can I help you today?");
         starterPromptSent = true;
     }
 });
