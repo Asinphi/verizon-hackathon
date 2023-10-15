@@ -77,15 +77,10 @@ chrome.runtime.onMessage.addListener(
         if (request.highlightId) {
             let element = document.getElementById(request.highlightId);
             if (element) {
-                // Styling files get priority over inline styles
-                var style = document.createElement('style');
-                style.innerHTML = `
-                #${request.highlightId} {
-                    border: thick solid red !important;
-                }`;
-                document.head.appendChild(style);
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                element.focus();
+                const highlightedEl = element.querySelector(`:is(main, section, div):has(> :is(p, span, h4))`) ?? element;
+                highlightedEl.style.border = "thick solid #3932dc";
+                highlightedEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                highlightedEl.focus();
                 await botSpeech(await summarizeAnswer(getTextDataFromDiv(element), request.prompt));
             }
         }
