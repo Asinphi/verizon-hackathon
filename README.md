@@ -49,8 +49,6 @@ We became proficient in using collaboration software such as Miro and Notion, an
 AIRA could be expanded to work with websites within the Verizon network and potentially extend its services to other businesses.
 <br><br>**Enhancing Knowledge Base**:<br>
 We aim to give AIRA a broader knowledge base, enabling it to provide even more comprehensive information about company products and services.
-<br><br>**Enhancing Knowledge Base **<br>
-We aim to give AIRA a broader knowledge base, enabling it to provide even more comprehensive information about company products and services.
 
 ## Deploying the code
 Our secret API keys are in a file not in this repository. To deploy it with your own API keys, add the file `gptapi/apiKey.js`:
