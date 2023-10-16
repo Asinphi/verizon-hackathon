@@ -19,13 +19,15 @@
     },
     "permissions": [
         "storage",
-        "activeTab"
+        "activeTab",
+        "scripting"
     ],
     "host_permissions": [
         "https://www.verizon.com/*"
     ],
     "background": {
-        "service_worker": "service-worker.js"
+        "service_worker": "service-worker.js",
+        "type": "module"
     },
     "content_scripts": [{
         "js": ["gptapi/apiKey.js", "gptapi/chatgpt.js", "website-sections.js","natural-search.js", "gptapi/content.js"],
