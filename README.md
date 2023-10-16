@@ -3,6 +3,7 @@
 </p>
 
 ## AIRA
+Winner of the Verizon award and 2nd place overall award at the 2023 University of Florida AI days Verizon Hackathon!
 ## Inspiration
 We were inspired to create a click less interaction with a retail website. Our inspiration was to mirror the experience of walking into a retail location and talking to an associate in person.
 
