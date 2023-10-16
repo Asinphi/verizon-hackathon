@@ -23,21 +23,21 @@
         "scripting"
     ],
     "host_permissions": [
-        "*://*/*"
+        "https://www.verizon.com/*"
     ],
     "background": {
         "service_worker": "service-worker.js",
         "type": "module"
     },
     "content_scripts": [{
-        "js": ["natural-search.js", "/transcription/recorder.js"],
+        "js": ["gptapi/apiKey.js", "gptapi/chatgpt.js", "website-sections.js","natural-search.js", "gptapi/content.js"],
+        "css": ["natural-search.css"],
         "matches": ["https://www.verizon.com/*"]
     }],
     "web_accessible_resources": [
         {
-            "resources": ["natural-search.html"],
-            "matches": ["https://www.verizon.com/*"],
-            "use_dynamic_url": true
+            "resources": ["assets/microphone-80.png", "assets/head.png", "assets/torso.png", "assets/hand.png"],
+            "matches": ["https://www.verizon.com/*"]
         }
     ]
 }

@@ -1,0 +1,89 @@
+@keyframes
+glow {
+    from {
+        box-shadow: 0 0 10px #00e6e6;
+    }
+    to {
+        box-shadow: 0 0 5px #fff, 0 0 20px #16b8b8;
+    }
+}
+
+.natural-search {
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
+    height: 6vh;
+    width: 80%;
+    bottom: -10%;
+    left: 10%;
+    z-index: 1000000; /* Actually the lowest z-index I can use to make it appear above everything */
+    font-family: BrandFont-Text, Arial, sans-serif;
+    opacity: 0;
+    transition: opacity 1s ease, bottom 1s ease;
+}
+
+.natural-search__bot-msg {
+    z-index: 90;
+    position: absolute;
+    bottom: 50%;
+    left: 7%;
+    display: block;
+    background-color: #709cda;
+    border-radius: 14px;
+    padding: 3px 10px;
+    color: whitesmoke;
+    opacity: 0;
+    transition: opacity 0.4s ease, bottom 0.5s ease 0.2s;
+}
+
+.natural-search__input {
+    z-index: 100;
+    width: 100%;
+    flex-shrink: 1;
+    display: block;
+    font-family: BrandFont-Text, Arial, sans-serif;
+    border-radius: 20px;
+    padding: 15px 15px 5px;
+    box-shadow: 0 0 1em rgb(76 229 215);
+    animation: glow 1s ease-in-out infinite alternate;
+}
+
+.natural-search__input:focus::placeholder {
+    color: transparent;
+}
+
+.natural-search__microphone-btn {
+    height: 100%;
+    display: block;
+    aspect-ratio: 1;
+    background-color: #6faea3;
+    border-radius: 20%;
+    border-style: solid;
+    border-color: #5a7c83;
+    transition: background-color 0.5s ease;
+    cursor: pointer;
+}
+
+.natural-search__microphone-checkbox:checked + .natural-search__microphone-btn {
+    background-color: #1fb0cf;
+}
+
+.natural-search__microphone-checkbox:checked + .natural-search__microphone-btn .natural-search__microphone-icon {
+    filter: invert(1); /* Make it white */
+}
+
+.natural-search__microphone-icon {
+    position: relative;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+}
+
+.natural-search__mascot-container {
+    z-index: 95;
+    width: 8%;
+    height: 200%;
+}

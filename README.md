@@ -1,101 +1,59 @@
-<div align="center">
-    <img src="https://raw.githubusercontent.com/SimGus/chrome-addon-v3-starter/master/logo/logo-128.png"/>
-    <h1>Chrome Extension v3 Starter</h1>
-    <h3>A minimal template of a Chrome v3 addon</h3>
-</div>
+<p align="center">
+  <img src="https://github.com/Rebeljah/verizon-hackathon/blob/main/assets/head.png" />
+</p>
 
-This repository contains a minimal Chrome/Chromium extension that uses the newest version of the manifest (v3).
+## AIRA
+Winner of the Verizon award and 2nd place overall award at the 2023 University of Florida AI days Verizon Hackathon!
+## Inspiration
+We were inspired to create a click less interaction with a retail website. Our inspiration was to mirror the experience of walking into a retail location and talking to an associate in person.
 
-You can use it as a basis to develop an extension.
-It can also give you more insights about how to turn a v2 extension to v3.
+## What it does
+AIRA, which stands for A.I. Retail Assistant, is a innovative web browser extension designed to enhance the online shopping experience by providing users with a seamless, voice-driven interface for interacting with retail websites.
 
-In other words, this is a **working, installable v3 extension** example meant for you to **jumpstart** the development of your own extension.
+## How we built it
+**OpenAI APIs for Intelligent Webpage Scanning**:<br>
+AIRA relies on OpenAI APIs to intelligently scan webpages and highlight relevant information based on voice queries. Specifically, we employed OpenAI's ChatGPT in conjunction with OpenAI functions to discern the user's intent. Depending on this intent, AIRA can either navigate to the correct webpage or locate the desired information on the current page.
+<br><br>**User Speech Recognition**:<br>
+To keep operating costs at a minimum, we utilized the built-in speech recognition functionalities of web browsers. While OpenAI's Whisper was considered, we found the browser's speech recognition to be sufficiently accurate for our needs.
+<br><br>**Conversational Voice with ElevenLabs Text-to-Speech**:<br>
+We wanted AIRA to offer a lifelike and friendly voice, so we integrated ElevenLabs' generative AI text-to-speech service. This allows users to hear AIRA as if they were engaging in a conversation with a live person.
 
+## Challenges we ran into
+**User Intent Inference**:<br>
+current webpage or refer to the ChatGPT training set was a significant challenge. We needed to accurately deduce user intent.
+<br><br>**Codebase Refactoring**:<br>
+We had to refactor our codebase multiple times to create a more modular and flexible framework, making it easier to customize the user experience.
+<br><br>**Asynchronous Requests and Chrome Runtime Messages**:<br>
+Interacting with asynchronous requests, Chrome runtime messages, and Chrome storage was complex. We initially encountered limitations with the storage of website parse trees in Chrome storage and had to find alternative solutions.
+<br><br>**Optimizing Website Parse Tree**:<br>
+To ensure that our website parse tree remained within the maximum 16,000 tokens for GPT requests, we developed three different algorithms. Ultimately, we arrived at a solution that involved grouping text in containers of a sufficiently low size.
 
-## Installation
-- **Fork** this repo, then **clone your forked repo locally**. If you don't have a github account, you can simply download a zip of the repo and unzip it on your computer.
-- **Open [the extensions page](chrome://extensions)** in your browser: `chrome://extensions`. This link works on any chromium-based browser.
-- If you did not do it already, **toggle the "developer mode"**. This is usually a toggle button at the top right of the extensions page.
-- Click the button **_load unpacked extension_**.
-- In the window that pops up, **select the folder that contains this minimal extension**, then **click _ok_**.
-- **Done!** A new extension called _Chrome Addon v3 Starter_ should have appeared in the list.
+## Accomplishments we're proud of
+**Working Prototype**:<br>
+We successfully developed a working prototype of AIRA, demonstrating the feasibility of our concept.
+<br><br>**Innovative Use of Generative AI**:<br>
+We found a novel application for generative AI, addressing a real-world problem in a new and innovative way.
+<br><br>**High-Value Concept with User Experience Focus**:<br>
+We created a concept that adds substantial value to users while emphasizing a user-friendly and engaging experience.
 
-## Q&A
-> Does this work only on Chrome or on **other web browsers** as well?
+## What we learned
+**Team Collaboration**:<br>
+We gained experience in working effectively as a team, fostering cooperation and coordination among team members.
+<br><br>**Applying OpenAI Functions Dynamically**:<br>
+We learned how to apply OpenAI functions to dynamically react to user input, ensuring that AIRA responded effectively.
+<br><br>**Utilizing Collaboration Software**:<br>
+We became proficient in using collaboration software such as Miro and Notion, and Git enhancing our project management and communication.
 
-At the moment, this works on every chromium-based web browser that supports v3 extensions.
-Therefore, you should be able to install this extension on any of the following browsers (as long as they are up-to-date):
-- _Free and open-source browsers_:
-    - Chromium
-    - Brave
-- _Proprietary browsers_:
-    - Chrome
-    - Edge
-    - Vivaldi
-    - Opera
+## Looking ahead
+**Expanding to Other Websites**:<br>
+AIRA could be expanded to work with websites within the Verizon network and potentially extend its services to other businesses.
+<br><br>**Enhancing Knowledge Base**:<br>
+We aim to give AIRA a broader knowledge base, enabling it to provide even more comprehensive information about company products and services.
 
-> So it doesn't work on **Firefox** or **Safari**?
-
-No, Firefox uses a different extension format. That being said, it is usually not too hard to port extensions from Chrome to Firefox.
-Read [their porting documentation](https://extensionworkshop.com/documentation/develop/porting-a-google-chrome-extension/) for more information.
-
-Safari uses yet another extension format and porting is usually harder.
-You can find more information [here](https://bartsolutions.github.io/2020/11/20/safari-extension/).
-
-> Does this work on **Chrome for Android/iOS**?
-
-Chrome for mobile doesn't currently support extensions.
-
-> I don't need a **popup tool** for my extension! Can I remove it?
-
-Yes, simply delete the `popup` folder and remove the `default_popup` property from the manifest.
-
-> I changed some code in the extension, but my **changes aren't taken into account**!
-
-For most of the changes you make, you will need to reload your extension for the changes to be applied.
-To do that, go to the chrome://extensions page and click the reload button of your extension.
-Note that most of the changes you will make to the settings page or the popup don't require reloading the extension.
-
-> Can I follow a **tutorial about a v2 extension** with this?
-
-Most of what you will find in those tutorials still holds with v3.
-
-However, a few things (notably best practices) have changed.
-You should read the [official migration page (v2 to v3)](https://developer.chrome.com/docs/extensions/mv3/intro/mv3-migration/) before following such a tutorial.
-
-> When I make an erroneous change in my service worker, the extension doesn't load! How can I **debug a service worker**?
-
-Using the debugger if your service worker is not loaded is not possible.
-
-However, if you want to test some piece of code before putting it in your service worker, you can:
-- load your extension with a working version of the service worker.
-- click on "service worker" on the page _chrome://extensions_. This will open the console attached to the service worker.
-- paste your code in the console and see if any error is logged.
-
-Note that in this console, you have access to anything your service worker has access to, including its variables, functions and chrome APIs.
-
-> How do I **uninstall** this extension from my browser?
-
-- Go to the [extensions page](chrome://extensions): chrome://extensions.
-  There should be a card with the name of this extension as title.
-  If you don't see such a card, it means the extension is not installed.
-- Simply click the _Delete_ button at the bottom of the card. Click _ok_ if a popup asks you for confirmation. The extension is now uninstalled.
-
-> I want to **push my changes to my own repo**, how do I do this?
-
-- If you forked this repo and cloned your own fork locally, git will push to your fork on your account automatically (i.e. use the command `git push` or `git push origin <your-branch>`).
-
-- If you downloaded a zip or simply cloned this repo locally, do the following:
-    - Create a github account if you don't already have one and install git on your machine.
-    - Create a new (empty) repo on your github and copy its url.
-    - Open a terminal in the folder where the extension is cloned.
-    - Run the command `git init`, then `git commit -am "Initial commit"`
-    - Run the command `git remote add origin <url-of-your-repo>`
-    - Run `git push -u origin master`. The extension code is now on your repo, on brnach _master_.
-    - If you want, you can make the _master_ branch the default one and delete the _main_ branch in the settings of your repo.
-
-## External resources
-- [Official feature summary for manifest v3](https://developer.chrome.com/docs/extensions/mv3/intro/mv3-overview/)
-- [Migrating from v2 to v3](https://developer.chrome.com/docs/extensions/mv3/intro/mv3-migration/) + [very useful checklist once you think you are done](https://developer.chrome.com/docs/extensions/mv3/mv3-migration-checklist/)
-- [Excellent write-ups of a migration](https://github.com/kentbrew/learning-manifest-v3)
-- [Another example of a v3 extension (older code)](https://gist.github.com/dotproto/3a328d6b187621b445499ba503599dc0)
+## Deploying the code
+Our secret API keys are in a file not in this repository. To deploy it with your own API keys, add the file `gptapi/apiKey.js`:
+```js
+const apiKey = "Your OpenAI API key here";
+const elevenKey = "Your Eleven Labs API key here";
+```
+For loading the extension into your Chromium-based (Chrome, Edge, Opera, etc.) browser, [see this tutorial](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked).
